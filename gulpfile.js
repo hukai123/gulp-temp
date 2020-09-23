@@ -37,15 +37,16 @@ gulp.task('sass',function(){
 });
 
 gulp.task('scripts',function(){       
-    return gulp.src(['src/js/jquery-1.11.3.js','src/js/swiper-3.3.1.min.js'])
+    return gulp.src(['src/js/flexible.js','src/js/index.js','src/js/jquery-1.11.3.js','src/js/swiper-3.3.1.min.js'])
            .pipe(concat('vendor.js'))	       //用gulp-concat合并文件
            .pipe(gulp.dest('dist/js'))         //合并文件并给合并后的文件取名
-           .pipe(uglify())                     //压缩js最小化
-           .pipe(rename('vendor.min.js'))      //重命名
-           .pipe(gulp.dest('dist/js'));
+        //    .pipe(uglify())                     //压缩js最小化
+        //    .pipe(rename('vendor.min.js'))      //重命名
+        //    .pipe(gulp.dest('dist/js'))
+           .pipe(connect.reload());
 });
 
-gulp.task('build',['copy-index','images','data','sass','scripts'],function(){     //build任务依赖其他几个任务，同时执行他依赖的几个任务，等几个都完成后再执行自己的回调函数（输出编译成功）
+gulp.task('build',gulp.series('copy-index','images','data','sass','scripts'),function(){     //build任务依赖其他几个任务，同时执行他依赖的几个任务，等几个都完成后再执行自己的回调函数（输出编译成功）
     console.log('编译成功！');
 });
 
@@ -53,24 +54,19 @@ gulp.task('server',function(){
     connect.server({
     	root: 'dist',
     	livereload: true,
-    	// port:80,           //默认是8080
+    	//port:80,           //默认是8080
     })
 });
 
 gulp.task('watch',function(){                  //监视任务
-    gulp.watch('index.html',['copy-index']);   //当index.html变化时执行copy-index任务
-    gulp.watch('src/images/**/*',['images']);
-    gulp.watch(['src/xml/*.xml','src/json/*.json','!src/json/test-*.json'],['data']);
-    gulp.watch('src/css/**/*.scss',['sass']);
-    gulp.watch(['src/js/jquery-1.11.3.js','src/js/swiper-3.3.1.min.js'],['sass'],['scripts']);
+    gulp.watch('index.html',gulp.series('copy-index'));   //当index.html变化时执行copy-index任务
+    gulp.watch('src/images/**/*',gulp.series('images'));
+    gulp.watch(['src/xml/*.xml','src/json/*.json','!src/json/test-*.json'],gulp.series('data'));
+    gulp.watch('src/css/**/*.scss',gulp.series('sass'));
+    gulp.watch(['src/js/index.js','src/js/jquery-1.11.3.js'],gulp.parallel('scripts'));
 });
 
-gulp.task('default',['server','watch']);      //默认任务,控制台只需要输入gulp
-
-
-
-
-
+gulp.task('default',gulp.parallel('server','watch'));      //默认任务,控制台只需要输入gulp
 
 
 
@@ -79,3 +75,20 @@ gulp.task('default',['server','watch']);      //默认任务,控制台只需要�
 //gulp.src('images/*.{png,jpg}')    //images目录下所有的png/jpg文件(不包括多级子目录下的文件)
 //gulp.src('images/*.jpg')   //images目录下所有jpg的文件(不包括子目录下的文件)
 //gulp.src('images/*')       //images目录下所有的文件(不包括子目录下的文件)
+
+
+
+// 不要再用gulp 3的方式指定依赖任务，你需要使用gulp.series和gulp.parallel，因为gulp任务现在只有两个参数。　
+// gulp.series：按照顺序执行
+// gulp.parallel：可以并行计算
+
+// gulp.task('my-task',gulp.series('a','b','c',() => {
+//     // Do something after a,b, and c are finished.
+// }));
+ 
+// gulp.task('build',gulp.parallel('style','script','images',() => {
+//     // build the website.
+// }));
+// gulp.task('my-task',gulp.series('a',gulp.parallel('style','script','image'),'b','c',() => {
+//     // Do something after a, b, and c are finished.
+// }));

@@ -1,9 +1,22 @@
+@import './reset.scss';
+@import './variables.scss';
+@import './global.scss';
 $base-color: #00ffff;
 $color: red;
 
 body {
 	background: lighten($base-color,10%);
+	font-size: 12px;
+	overflow-x: hidden;
 	h3{
-		color: $color;
+		// color: $color;
+		font-size: 22px;
+		color: $main;
+	}
+	.test{
+		font-size: 20px;
+		height: 200px;
+		width: px2rem(750);
+		background: #f00;
 	}
 }

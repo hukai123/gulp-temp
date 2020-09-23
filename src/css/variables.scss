@@ -1,0 +1,41 @@
+$blue:#324157;
+$light-blue:#3A71A8;
+$red: #F84949 ;
+$pink: #E65D6E;
+$green: #45D91B;
+$tiffany: #4AB7BD;
+$yellow:#F5B635;
+$panGreen: #30B08F;
+$baseFontSize: 75;
+
+//默认主色调
+$main: #F81E36;
+$bgmain: #E8F4F9;
+
+
+@function px2rem($px){
+  @return $px / $baseFontSize * 1rem;
+}
+
+
+// @mixin px2rem($property,$px,$px2:false,$px3:false,$px4:false){
+//     @if $px and $px2 and $px3 and $px4 {
+//       #{$property}: ($px / $baseFontSize) + rem ($px2 / $baseFontSize) + rem ($px3 / $baseFontSize) + rem ($px4 / $baseFontSize) + rem;
+//       [data-size='pc'] & {
+//         #{$property}: ($px / $baseFontSize2) + rem ($px2 / $baseFontSize2) + rem ($px3 / $baseFontSize2) + rem ($px4 / $baseFontSize2) + rem !important;
+//       }
+//     }
+//     @else if $px and $px2 {
+//       #{$property}: ($px / $baseFontSize) + rem ($px2 / $baseFontSize) + rem;
+//       [data-size='pc'] & {
+//         #{$property}: ($px / $baseFontSize2) + rem ($px2 / $baseFontSize2) + rem !important; 
+//       }
+//     }
+//     @else{
+//       #{$property}: ($px / $baseFontSize) + rem;
+//       [data-size='pc'] & {
+//         #{$property}: ($px / $baseFontSize2) + rem !important;
+//       }
+//     }
+// }
+// @include px2rem(height,128);
