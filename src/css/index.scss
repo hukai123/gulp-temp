@@ -19,4 +19,11 @@ body {
 		width: px2rem(750);
 		background: #f00;
 	}
+	img{
+		display: block;
+		width: 100%;
+	}
+	p{
+		font-size: px2rem(30);
+	}
 }
