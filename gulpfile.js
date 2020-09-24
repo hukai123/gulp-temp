@@ -15,13 +15,14 @@ var notify = require('gulp-notify');
 
 
 gulp.task('copy-index',function(){             //控制台输入gulp copy-index 
-    return gulp.src('index.html')
+    // return gulp.src('index.html')
+    return gulp.src(['index.html','src/html/**/*.html'])
            .pipe(gulp.dest('dist'))
            .pipe(connect.reload());            //热加载
 });
 
 gulp.task('copy-js',function(){             //控制台输入gulp copy-index 
-    return gulp.src('src/js/flexible.js')
+    return gulp.src(['src/js/flexible.js','src/js/vue.min.js'])
            .pipe(gulp.dest('dist/js'))
            .pipe(connect.reload());            //热加载
 });
@@ -40,7 +41,8 @@ gulp.task('data',function(){
 });
 
 gulp.task('sass',function(){                   
-    return gulp.src('src/css/**/*.scss')
+    // return gulp.src(['src/css/**/*.scss'])
+    return gulp.src(['src/css/index.scss','src/css/counter.scss'])
            .pipe(sass())     				   //用gulp-sass插件编译scss到css
            //.pipe(gulp.dest('dist/css'))
            .pipe(concat('main.css'))
@@ -57,7 +59,7 @@ gulp.task('sass',function(){
 });
 
 gulp.task('scripts',function(){       
-    return gulp.src(['src/js/flexible.js','src/js/index.js','src/js/jquery-1.11.3.js','src/js/swiper-3.3.1.min.js'])
+    return gulp.src(['src/js/jquery-1.11.3.js','src/js/swiper-3.3.1.min.js','src/js/index.js'])
             .pipe(concat('vendor.js'))	       //用gulp-concat合并文件
             .pipe(gulp.dest('dist/js'))         //合并文件并给合并后的文件取名
             .pipe(uglify())                     //压缩js最小化
@@ -107,7 +109,7 @@ gulp.task('server',function(){
 });
 
 gulp.task('watch',function(){                  //监视任务
-    gulp.watch('index.html',gulp.series('copy-index'));   //当index.html变化时执行copy-index任务
+    gulp.watch(['index.html','src/html/**/*.html'],gulp.series('copy-index'));   //当index.html变化时执行copy-index任务
     gulp.watch('src/images/**/*',gulp.series('images'));
     gulp.watch(['src/xml/*.xml','src/json/*.json','!src/json/test-*.json'],gulp.series('data'));
     gulp.watch('src/css/**/*.scss',gulp.series('sass'));

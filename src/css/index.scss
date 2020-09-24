@@ -5,25 +5,28 @@ $base-color: #00ffff;
 $color: red;
 
 body {
-	background: lighten($base-color,10%);
-	font-size: 12px;
-	overflow-x: hidden;
-	h3{
-		// color: $color;
-		font-size: 22px;
-		color: $main;
-	}
-	.test{
-		font-size: 20px;
-		height: 200px;
-		width: px2rem(750);
-		background: #f00;
-	}
-	img{
-		display: block;
-		width: 100%;
-	}
-	p{
-		font-size: px2rem(30);
+	font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Segoe UI,Arial,Roboto,PingFang SC,Hiragino Sans GB,Microsoft Yahei,sans-serif;
+	.index-container{
+		background: lighten($base-color,10%);
+		font-size: 12px;
+		overflow-x: hidden;
+		h3{
+			// color: $color;
+			font-size: 22px;
+			color: $main;
+		}
+		.test{
+			font-size: 20px;
+			height: 200px;
+			width: px2rem(750);
+			background: #f00;
+		}
+		img{
+			display: block;
+			width: 100%;
+		}
+		p{
+			font-size: px2rem(30);
+		}
 	}
 }

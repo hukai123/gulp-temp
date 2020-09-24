@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>保费计算器</title>
+	<meta name="viewport"
+	content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="css/main.min.css">
+	<script type="text/javascript" language="javascript" src="js/flexible.js" ></script>
+</head>
+<body>
+<div id="counter" class="counter-container">
+	<p class="tip_p_c"><i>*</i>仅提供商业保险的保费计算，其他险种的计算暂未上线，敬请期待。</p>
+    <div class="tip_row flex">
+      <div class="l_tip flex" @click="openTipDialog('l')">
+        <img src="./images/icons/l_tip_img.png" alt="">
+        <span>无赔款优待规划</span>
+      </div>
+      <div class="r_tip flex" @click="openTipDialog('r')">
+        <img src="./images/icons/r_tip_img.png" alt="">
+        <span>商业保险条款</span>
+      </div>
+    </div>
+    <div class="form_box">
+      <div class="input_row flex">
+        <i class="icon">*</i>
+        <img src="./images/icons/icon1.png" alt="" srcset="">
+        <span>当前保单保费</span>
+        <input type="number" placeholder="请输入当前商业险保单保费" v-model="nowPrice">
+        <span class="unit">元</span>
+      </div>
+      <div class="input_row flex">
+        <i class="icon">*</i>
+        <img src="./images/icons/icon2.png" alt="" srcset="">
+        <span>保单到期时间</span>
+        <input type="text" placeholder="请选择保单到期日" v-model="expireDate" @blur="selectExpireDate(expireDate)" @click="showDatePicker=true">
+        <span class="unit"></span>
+        <img class="date_icon" @click="showDatePicker=true" src="./images/icons/date_icon.png" alt="" srcset="">
+      </div>
+      <div class="input_row flex">
+        <i class="icon">*</i>
+        <img src="./images/icons/icon3.png" alt="" srcset="">
+        <span>连续投保年限</span>
+        <input type="text" placeholder="请选择连续投保年限" v-model="continueInsured" @click="handleInsuredClick">
+        <span class="unit">年</span>
+      </div>
+      <div class="input_row flex">
+        <i class="icon">*</i>
+        <img src="./images/icons/icon4.png" alt="" srcset="">
+        <span>各投保年份的出险次数:</span>
+      </div>
+      <div class="unSafeForm">
+        <div class="input_row flex" v-if="continueInsured>=1">
+          <span class="time">({{t51}}-{{t52}})</span>
+          <input type="text" @click="setType(5)" v-model="unSafeCount5">
+          <span class="unit">次</span>
+          <img class="arrow" src="./images/icons/arrow_down.png" alt="" srcset="">
+        </div>
+        <div class="input_row flex" v-if="continueInsured>=2">
+          <span class="time">({{t41}}-{{t42}})</span>
+          <input type="text" @click="setType(4)" v-model="unSafeCount4">
+          <span class="unit">次</span>
+          <img class="arrow" src="./images/icons/arrow_down.png" alt="" srcset="">
+        </div>
+        <div class="input_row flex" v-if="continueInsured>=3">
+          <span class="time">({{t31}}-{{t32}})</span>
+          <input type="text" @click="setType(3)" v-model="unSafeCount3">
+          <span class="unit">次</span>
+          <img class="arrow" src="./images/icons/arrow_down.png" alt="" srcset="">
+        </div>
+        <div class="input_row flex" v-if="continueInsured>=4">
+          <span class="time">({{t21}}-{{t22}})</span>
+          <input type="text" @click="setType(2)" v-model="unSafeCount2">
+          <span class="unit">次</span>
+          <img class="arrow" src="./images/icons/arrow_down.png" alt="" srcset="">
+        </div>
+      </div>
+    </div>  
+    <!-- <div class="count_btn active" @click="calcFun">开始计算</div> -->
+    <div :class="['count_btn', continueInsured&&nowPrice?'active':'']" @click="calcFun">开始计算</div>
+    <p class="count_tip">计算结果仅供参考，实际金额以当地报价为准</p>
+    <div class="bar"></div>
+    <div class="result_title">计算结果:</div>
+    <div class="result_box">
+      <p>1、当前保单无赔款优待系数(NCD)为：{{ncdArray[0]}}</p>
+      <p>2、本年度续保的无赔付优待系数(NCD)</p>
+      <p class="sub_p">a.若本次不出险为：{{ncdArray[1]}}</p>
+      <p class="sub_p">b.若本次出险则为：{{ncdArray[2]}}</p>
+      <p>3、按当前保单商业险险种续保，若本次出险，所需保费为：{{premiumArray[1]?premiumArray[1]+'元':''}}</p>
+      <p>4、本次出险后续保商业险保费，与当前保单保费差额：{{diffPrice?diffPrice+'元 ('+(diffPrice*1>0?'上涨':'')+premiumArray[2]+'%)':''}}</p>
+      <!-- <p>{{this.ncdArray}}</p> -->
+    </div>
+    <p class="bottom_tip">由于车险综合改革后基准保费降低，出险后保费与当前保费的差额，可能比上述计算结果还要小：同时若出现脱保也会影响结果，请以正式报价对比为准。</p>
+</div>
+<!-- <script type="text/javascript" language="javascript" src="/js/index.js" charset="gbk"></script> -->
+<script type="text/javascript" language="javascript" src="js/vendor.min.js" ></script>
+<script src="js/vue.min.js"></script>
+<script>
+let vm=new Vue({
+    el:"#counter",
+    data:{
+      dialogTipTitle: '',
+      dialogTipType: 'l',
+      minDate: new Date('2000/01/01'),
+      maxDate: new Date('2050/01/01'),
+      currentDate: new Date(),
+      showLoading: false,
+      showTipDialog: false,
+      showDatePicker: false,
+      showContinuePicker: false,
+      showItemPicker: false,
+      insuredColumns: [
+        { text: '1', value: 1 },
+        { text: '2', value: 2},
+        { text: '3', value: 3},
+        { text: '≥4', value: 4},
+      ],
+      itemColumns: [
+        { text: '0', value: 0 },
+        { text: '1', value: 1 },
+        { text: '2', value: 2},
+        { text: '3', value: 3},
+        { text: '4', value: 4},
+        { text: '5', value: 5},
+      ],
+      t52: '',
+      t51: '',
+      t42: '',
+      t41: '',
+      t32: '',
+      t31: '',
+      t22: '',
+      t21: '',
+      t12: '',
+      t11: '',
+      NCDArr: {
+        "-4": 0.5,
+        "-3": 0.6,
+        "-2": 0.7,
+        "-1": 0.8,
+        "0": 1.0,
+        "1": 1.2,
+        "2": 1.4,
+        "3": 1.6,
+        "4": 1.8,
+        "5": 2.0,
+      },
+      CUR_NCDArr: {
+        "-3": 0.6,
+        "-2": 0.7,
+        "-1": 0.85,
+        "1": 1.0,
+        "2": 1.25,
+        "3": 1.5,
+        "4": 1.75,
+        "5": 2.0,
+      },
+      expireDate: '',
+      unSafeCount5: 0, //出险次数
+      unSafeCount4: 0,
+      unSafeCount3: 0,
+      unSafeCount2: 0,
+      continueInsured: '',  //连续投保年限
+      nowPrice: '',      //当前保费
+      ncdArray: ['','',''], //ncd Arr
+      premiumArray: ['','',''],  //保费Arr
+      ncd_K: 1.0,    //保费基准系数，暂定为1.0,最终系数待9月19日车险综改后明确
+      nowLevel: 0,
+      renewalLevel: 0,
+      renewalOutLevel: 0,
+      diffPrice: '',
+    },
+    created() {
+      this.statistics();
+    },
+    mounted() {},
+    methods: {
+      openTipDialog(v) {
+        this.dialogTipType = v;
+        if(this.dialogTipType=='l'){
+          this.dialogTipTitle = "无赔款优待等级和系数确定规则"
+        }else{
+          this.dialogTipTitle = "中国保险行业协会机动车商业保险示范条款（2020版）"
+        }
+        this.showTipDialog = true;
+      },
+      selectExpireDate(T) {
+        this.showDatePicker = false;
+        // this.expireDate = this.parseTime(t,'{y}.{m}.{d}');
+        let t = new Date(T);
+        console.log('currentDate',this.currentDate);
+        let d = t.getTime() + 24*60*60*1000;
+        // console.log('d',d);
+        // console.log('dddd',this.parseTime(d,'{y}.{m}.{d}'));
+
+        let y = this.parseTime(t,'{y}');
+        this.t52 = this.expireDate;
+        this.t51 = y-1 + this.parseTime(d,'.{m}.{d}');
+        this.t42 = y-1 + this.parseTime(t,'.{m}.{d}');
+        this.t41 = y-2 + this.parseTime(d,'.{m}.{d}');
+        this.t32 = y-2 + this.parseTime(t,'.{m}.{d}');
+        this.t31 = y-3 + this.parseTime(d,'.{m}.{d}');
+        this.t22 = y-3 + this.parseTime(t,'.{m}.{d}');
+        this.t21 = y-4 + this.parseTime(d,'.{m}.{d}');
+        this.t12 = y-4 + this.parseTime(t,'.{m}.{d}');
+        this.t11 = y-5 + this.parseTime(d,'.{m}.{d}');
+      },
+      handleInsuredClick() {
+        if(!this.expireDate){
+          alert('请选择保单到期时间！');
+        }else{
+          this.showContinuePicker = true;
+        }
+      },
+      selectContinueInsured(v) {
+        this.showContinuePicker = false;
+        this.continueInsured = v.value;
+      },
+      setType(n) {
+        this.itemType = n;
+        this.showItemPicker = true;
+      },
+      selectItemCount(v) {
+        switch(this.itemType){
+          case 5:
+            this.unSafeCount5 = v.value;
+            break;
+          case 4:
+            this.unSafeCount4 = v.value;
+            break;
+          case 3:
+            this.unSafeCount3 = v.value;
+            break;
+          case 2:
+            this.unSafeCount2 = v.value;
+            break;
+          default:;
+        }
+        this.showItemPicker = false;
+      },
+      calcFun() {
+        if(!this.nowPrice){
+          return alert('请输入当前保单保费！');
+        }
+        if(!this.expireDate){
+          return alert('请选择保单到期日！');
+        }
+        if(!this.continueInsured){
+          return alert('请选择连续投保年限！');
+        }
+        // _hmt.push(["_trackEvent", "保费计算", "click", '开始计算']);
+        let ncdArr = this.getNCD();
+        // this.$nextTick(()=>{
+          this.premiumArray[0] = (this.nowPrice/this.ncdArray[0] * this.ncdArray[1]*this.ncd_K).toFixed(2);
+          this.premiumArray[1] = (this.nowPrice/this.ncdArray[0] * this.ncdArray[2]*this.ncd_K).toFixed(2);
+          this.premiumArray[2] = (100*((this.premiumArray[1] - this.nowPrice)/this.premiumArray[1])).toFixed(2);
+          Vue.set(this.premiumArray, 0, this.premiumArray[0]);
+          Vue.set(this.premiumArray, 1, this.premiumArray[1]);
+          Vue.set(this.premiumArray, 2, this.premiumArray[2]);
+        // })
+        this.diffPrice = (this.premiumArray[1]-this.nowPrice).toFixed(2);
+        console.log("续保后未出险保费 = " + this.premiumArray[0]);
+        console.log("本次续保出险保费 = " + this.premiumArray[1]);
+        console.log("本次出险预计保费上涨百分比 = " + this.premiumArray[2]+'%');
+      },
+      getNCD() {
+        let sum345,sum234,sum2345,sum1234;
+        sum345 = this.unSafeCount3 + this.unSafeCount4*1 + this.unSafeCount5;
+        sum234 = this.unSafeCount2 + this.unSafeCount3*1 + this.unSafeCount4;
+        sum2345 = sum234 + this.unSafeCount5;
+        let continueInsured = this.continueInsured;
+        // A、计算当前保单等级
+        this.nowLevel = this.getCurLevel(this.unSafeCount2,this.unSafeCount3,this.unSafeCount4,continueInsured);
+
+        // B、计算不出险本年续保等级
+        if(continueInsured>=4){
+          if(sum2345==0){
+            this.renewalLevel = -4;
+          }else{
+            this.renewalLevel = sum345 - 3;
+          }
+        }else{
+          this.renewalLevel = sum345 - continueInsured;
+        }
+        // C、计算本次出险本年续保等级 连续投保年限最大为3
+        if(continueInsured>3){
+          continueInsured = 3;
+        }
+        this.renewalOutLevel = sum345 + 1 - continueInsured;
+        // this.nowLevel = this.ensureBound(this.nowLevel)+'';
+        this.renewalLevel = this.ensureBound(this.renewalLevel)+'';
+        this.renewalOutLevel = this.ensureBound(this.renewalOutLevel)+'';
+        // this.$nextTick(()=>{
+          this.ncdArray[0] = this.CUR_NCDArr[this.nowLevel];
+          this.ncdArray[1] = this.NCDArr[this.renewalLevel];
+          this.ncdArray[2] = this.NCDArr[this.renewalOutLevel];
+          Vue.set(this.ncdArray, 0, this.ncdArray[0]);
+          Vue.set(this.ncdArray, 1, this.ncdArray[1]);
+          Vue.set(this.ncdArray, 2, this.ncdArray[2]);
+        // })
+        console.log("当前保单等级 = " + this.nowLevel + ", ncd系数 = " + this.ncdArray[0]);
+        console.log("不出险本年续保等级 = " + this.renewalLevel + ", ncd系数 = " + this.ncdArray[1]);
+        console.log("本次出险本年续保等级 = " + this.renewalOutLevel + ", ncd系数 = " + this.ncdArray[2]);
+        return this.ncdArray;
+      },
+      getCurLevel(cnt2,cnt3,cnt4,year) {
+        let cLevel = 0;
+        if(year >=4 ){
+          if(cnt4 == 0){
+            cLevel = -1;
+            if(cnt3 == 0){
+              cLevel = -2;
+              if(cnt2 == 0){
+                  cLevel = -3;
+              }
+            }
+          }else{
+            cLevel = cnt4 > 5 ? 5 : cnt4;
+          }
+        }else{
+          if(year == 1){
+            cLevel = year;
+          }else if(year == 2){
+            if(cnt4 == 0){
+              cLevel = -1;
+            }else{
+              cLevel = cnt4 > 5 ? 5 : cnt4;
+            }
+          }else if(year == 3){
+            if(cnt4 == 0){
+              cLevel = -1;
+              if(cnt3 == 0){
+                  cLevel = -2;
+              }
+            }else{
+              cLevel = cnt4 > 5 ? 5 : cnt4;
+            }
+          }
+        }
+        return cLevel;
+      },
+      ensureBound(level) {
+        if (level > 5) {
+          level = 5;
+        }
+        if (level < -4) {
+          level = -4;
+        }
+        return level;
+      },
+      statistics() {
+        let pamer = {
+          source: "calculation",
+          page: "1",
+          loginfromType: getUrlParam('loginfromtype')?getUrlParam('loginfromtype'): -1
+        };
+        $.ajax({
+          url:"https://photo-admin.gtmc.rhealane.cn/api/v1.0/photo/accessRecords/saveAccessRecords",
+          datatype:"json",
+          type:"post",
+          data: pamer,
+          success: (res)=>{
+            console.log('记录成功！',res);
+          }
+        });
+      },
+      parseTime(time, cFormat) {
+        if (arguments.length === 0) {
+            return null
+        }
+        const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
+        let date
+        if (typeof time === 'object') {
+            date = time
+        } else {
+            if (('' + time).length === 10) time = parseInt(time) * 1000
+            date = new Date(time)
+        }
+        const formatObj = {
+            y: date.getFullYear(),
+            m: date.getMonth() + 1,
+            d: date.getDate(),
+            h: date.getHours(),
+            i: date.getMinutes(),
+            s: date.getSeconds(),
+            // a: date.getDay()
+        }
+        const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
+            let value = formatObj[key]
+            // if (key === 'a') return ['一', '二', '三', '四', '五', '六', '日'][value - 1]
+            if (result.length > 0 && value < 10) {
+                value = '0' + value
+            }
+            return value || 0
+        })
+        return time_str
+      },
+    }
+})
+//  一般不会在外部调用vm
+//修改msg
+setInterval(() => {
+vm.time=new Date();
+}, 1000);
+
+</script>
+</body>
+</html>

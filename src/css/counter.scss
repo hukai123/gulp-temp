@@ -1,0 +1,227 @@
+@import './index.scss';
+
+.counter-container {
+    width: 100%;
+    min-height: 100vh;
+    // background: url("../assets/image/bg.png") no-repeat;
+    background: #fff;
+    background-size: 100% 100%;
+    p{
+     margin: 0; 
+      &.tip_p_c{
+      line-height: px2rem(30);
+      text-align: center;
+      font-size: px2rem(18);
+      color: #DC424C;
+      margin-bottom: px2rem(18);
+      i{
+        font-style: normal;
+        font-size: px2rem(20);
+        font-family: Source Han Sans CN;
+        font-weight: bold;
+        color: #DC424C;
+        margin-right: px2rem(4);
+      }
+      }
+      &.count_tip{
+       text-align: center;
+       color: #DC1A1A;
+       font-size: px2rem(18);
+       margin-bottom: px2rem(20);
+      }
+      &.bottom_tip{
+        padding-left: px2rem(60);
+        padding-right: px2rem(70);
+        line-height: px2rem(30);
+        text-align: left;
+        font-size: px2rem(18);
+        color: #DC1A1A;
+        margin-bottom: px2rem(18);
+      }
+    }
+    .tip_row{
+      height: px2rem(40);
+      padding: 0 px2rem(20);
+      justify-content: space-between;
+      align-items: center;
+      .l_tip,.r_tip{
+        align-items: center;
+        span{
+          border-bottom: 1px solid #9A9A9A;
+        }
+      }
+      img{
+        width: px2rem(25);
+        height: px2rem(25);
+        display: block;
+        margin-right: px2rem(6);
+      }
+    }
+    .form_box{
+      padding: px2rem(26) px2rem(66) px2rem(20) px2rem(76);
+      .input_row{
+        height: px2rem(52);
+        margin-bottom: px2rem(18);
+        width: 100%;
+        align-items: center;
+        position: relative;
+        .icon{
+          font-style: normal;
+          font-size: px2rem(30);
+          font-family: Source Han Sans CN;
+          font-weight: bold;
+          color: #DC424C;
+          margin-right: px2rem(7);
+        }
+        img{
+          display: block;
+          width: px2rem(35);
+          height: px2rem(35);
+          margin-right: px2rem(5);
+        }
+        .date_icon{
+          position: absolute;
+          width: px2rem(25);
+          height: px2rem(25);
+          display: block;
+          right: px2rem(50);
+        }
+        span{
+          margin-right: px2rem(28);
+          font-size: px2rem(26);
+          color: #666666;
+        }
+        input{
+          height: px2rem(52);
+          width: 1px;
+          flex: 1;
+          padding: 0;
+          margin: 0;
+          -webkit-appearance: none;
+          outline: none;
+          text-indent: px2rem(28);
+          border: px2rem(2) solid #CCCCCC;
+          border-radius: px2rem(8);
+          &::-webkit-input-placeholder { /* WebKit browsers */
+            font-size: px2rem(20);
+            color: #ccc;
+          }
+        }
+        .unit{
+          width: px2rem(30);
+          margin-left: px2rem(10);
+          margin-right: 0;
+        }
+      }
+      .unSafeForm{
+        padding-left: px2rem(40);
+        margin-bottom: px2rem(8);
+        .input_row{
+          // height: 26px;
+          height: px2rem(36);
+          margin-bottom: px2rem(22);
+          input{
+            // height: 26px;
+            height: px2rem(36);
+          }
+          .time{
+            width: px2rem(330);
+            margin-right: px2rem(18);
+          }
+          .arrow{
+            position: absolute;
+            right: px2rem(50);
+            // top: 10px;
+            top: center;
+            width: px2rem(12);
+            height: px2rem(6);
+          }
+        }
+      }
+    }
+    .count_btn{
+      margin: 0 auto;
+      width: px2rem(360);
+      height: px2rem(68);
+      line-height: px2rem(68);
+      text-align: center;
+      border-radius: px2rem(8);
+      margin-bottom: px2rem(15);
+      font-size: px2rem(28);
+      font-family: Source Han Sans CN;
+      font-weight: 500;
+      color: #FEFEFE;
+      background: #999999;
+      &.active{
+        background: #18CCFE;
+      }
+    }
+    .bar{
+      height: px2rem(26);
+      background: rgb(235, 235, 235);
+      padding-left: px2rem(4);
+    }
+    .result_title{
+      padding: px2rem(50) px2rem(40) px2rem(12);
+      font-size: px2rem(28);
+      font-family: Source Han Sans CN;
+      font-weight: 600;
+      color: #666666;
+    }
+    .result_box{
+      padding: px2rem(20) px2rem(70);
+      line-height: px2rem(34);
+      color: #666;
+      font-size: px2rem(24);
+      .sub_p{
+        text-indent: px2rem(40);
+      }
+    }
+    .tipDialog{
+      width: px2rem(550);
+      height: 76vh;
+      top: 50%;
+      border-radius: 0;
+      padding: px2rem(40) px2rem(30) px2rem(36);
+      /deep/ .van-dialog__content{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .tipDialogTitle{
+        flex: none;
+        text-align: center;
+        font-size: px2rem(20);
+        font-family: Source Han Sans CN;
+        font-weight: bold;
+        color: #666666;
+        padding-bottom: px2rem(12);
+        border-bottom: px2rem(2) solid #CCCCCC;
+        margin-bottom: px2rem(10);
+      }
+      .imgBox{
+        height: 1px;
+        flex: 1;
+        overflow-y: auto;
+        img{
+          display: block;
+          width: 100%;
+        }
+      }
+      .btn{
+        flex: none;
+        width: px2rem(360);
+        height: px2rem(70);
+        line-height: px2rem(70);
+        margin: 0 auto;
+        margin-top: px2rem(10);
+        background: #18CCFE;
+        text-align: center;
+        font-size: px2rem(28);
+        font-family: Source Han Sans CN;
+        font-weight: 500;
+        color: #FEFEFE;
+        border-radius: px2rem(8);
+      }
+    }
+  }
