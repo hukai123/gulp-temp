@@ -22,8 +22,14 @@ gulp.task('copy-index',function(){             //控制台输入gulp copy-index
 });
 
 gulp.task('copy-js',function(){             //控制台输入gulp copy-index 
-    return gulp.src(['src/js/flexible.js','src/js/vue.min.js'])
+    return gulp.src(['src/js/flexible.js','src/js/vue.min.js','src/js/layer.js'])
            .pipe(gulp.dest('dist/js'))
+           .pipe(connect.reload());            //热加载
+});
+
+gulp.task('copy-css',function(){             //控制台输入gulp copy-index 
+    return gulp.src(['src/css/layer.css'])
+           .pipe(gulp.dest('dist/css'))
            .pipe(connect.reload());            //热加载
 });
 
@@ -96,7 +102,7 @@ gulp.task('clean',function(){
     
 });
 
-gulp.task('build',gulp.series('clean',gulp.parallel('clean','copy-index','copy-js','images','data','sass','scripts')),function(){     //build任务依赖其他几个任务，同时执行他依赖的几个任务，等几个都完成后再执行自己的回调函数（输出编译成功）
+gulp.task('build',gulp.series('clean',gulp.parallel('clean','copy-index','copy-js','copy-css','images','data','sass','scripts')),function(){     //build任务依赖其他几个任务，同时执行他依赖的几个任务，等几个都完成后再执行自己的回调函数（输出编译成功）
     console.log('编译成功！');
 });
 

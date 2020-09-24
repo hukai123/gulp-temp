@@ -6,6 +6,7 @@
 	<meta name="viewport"
 	content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="css/main.min.css">
+	<link rel="stylesheet" type="text/css" href="css/layer.css">
 	<script type="text/javascript" language="javascript" src="js/flexible.js" ></script>
 </head>
 <body>
@@ -95,6 +96,7 @@
 <!-- <script type="text/javascript" language="javascript" src="/js/index.js" charset="gbk"></script> -->
 <script type="text/javascript" language="javascript" src="js/vendor.min.js" ></script>
 <script src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/layer.js"></script>
 <script>
 let vm=new Vue({
     el:"#counter",
@@ -240,13 +242,27 @@ let vm=new Vue({
       },
       calcFun() {
         if(!this.nowPrice){
-          return alert('请输入当前保单保费！');
+          // return alert('请输入当前保单保费！');
+          // return alert('请输入当前保单保费！');
+          return layer.open({
+            content: '请输入当前保单保费！',
+            skin: 'msg',
+            time: 2 //2秒后自动关闭
+          });
         }
         if(!this.expireDate){
-          return alert('请选择保单到期日！');
+          return layer.open({
+            content: '请选择保单到期日！',
+            skin: 'msg',
+            time: 2 //2秒后自动关闭
+          });
         }
         if(!this.continueInsured){
-          return alert('请选择连续投保年限！');
+          return layer.open({
+            content: '请选择连续投保年限！',
+            skin: 'msg',
+            time: 2 //2秒后自动关闭
+          });
         }
         // _hmt.push(["_trackEvent", "保费计算", "click", '开始计算']);
         let ncdArr = this.getNCD();
